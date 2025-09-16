@@ -164,13 +164,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App1.cpp" />
+    <FxCompile Include="colourGradient_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="colourGradient_vs.hlsl">
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <ClCompile Include="ColourQuad.cpp" />
+    <ClCompile Include="ColourQuad.h" />
     <ClCompile Include="ColourShader.cpp" />
+    <ClCompile Include="ColourShaderGradient.cpp" />
     <ClCompile Include="ColourTriangle.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App1.h" />
     <ClInclude Include="ColourShader.h" />
+    <ClInclude Include="ColourShaderGradient.h" />
     <ClInclude Include="ColourTriangle.h" />
   </ItemGroup>
   <ItemGroup>

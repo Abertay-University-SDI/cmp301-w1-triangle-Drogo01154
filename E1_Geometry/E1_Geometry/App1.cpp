@@ -4,7 +4,8 @@
 
 App1::App1()
 {
-	mesh = nullptr;
+	triangleMesh = nullptr;
+	quadMesh = nullptr;
 	colourShader = nullptr;
 }
 
@@ -14,9 +15,12 @@ void App1::init(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeigh
 	BaseApplication::init(hinstance, hwnd, screenWidth, screenHeight, in, VSYNC, FULL_SCREEN);
 
 	// Create Mesh object
-	mesh = new ColourTriangle(renderer->getDevice(), renderer->getDeviceContext());
+	triangleMesh = new ColourTriangle(renderer->getDevice(), renderer->getDeviceContext());
+	quadMesh = new ColourQuad(renderer->getDevice(), renderer->getDeviceContext());
 
+	colourGradientShader = new ColourGradientShader(renderer->getDevice(), hwnd);
 	colourShader = new ColourShader(renderer->getDevice(), hwnd);
+	
 
 }
 
@@ -27,16 +31,27 @@ App1::~App1()
 	BaseApplication::~BaseApplication();
 
 	// Release the Direct3D object.
-	if (mesh)
+	if (triangleMesh)
 	{
-		delete mesh;
-		mesh = 0;
+		delete triangleMesh;
+		triangleMesh = 0;
+	}
+
+	if (quadMesh) {
+		delete quadMesh;
+		quadMesh = 0;
 	}
 
 	if (colourShader)
 	{
 		delete colourShader;
 		colourShader = 0;
+	}
+
+	if (colourGradientShader)
+	{
+		delete colourGradientShader;
+		colourGradientShader = 0;
 	}
 }
 
@@ -75,9 +90,22 @@ bool App1::render()
 	XMMATRIX projectionMatrix = renderer->getProjectionMatrix();
 
 	// Send geometry data (from mesh), send shader pararmeters and render geometry with set shaders
-	mesh->sendData(renderer->getDeviceContext());
+	
+	triangleMesh->sendData(renderer->getDeviceContext());
+	
 	colourShader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
-	colourShader->render(renderer->getDeviceContext(), mesh->getIndexCount());
+	colourShader->render(renderer->getDeviceContext(), triangleMesh->getIndexCount());
+
+	worldMatrix *= XMMATRIX(
+	1.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f, 0.0f,
+	0.0f, -1.0f, 0.0f, 1.0f
+	);
+
+	quadMesh->sendData(renderer->getDeviceContext());
+	colourGradientShader->setShaderParameters(renderer->getDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
+	colourGradientShader->render(renderer->getDeviceContext(), quadMesh->getIndexCount());
 
 	// Render GUI
 	gui();
